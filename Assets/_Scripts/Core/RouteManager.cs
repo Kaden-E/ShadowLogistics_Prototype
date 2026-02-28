@@ -4,6 +4,9 @@ using UnityEngine;
 
 public partial class RouteManager : MonoBehaviour
 {
+    [Header("Debug")]
+    public bool forceInspection = false;
+    
     public static RouteManager Instance;
 
     public GameObject truckPrefab;
@@ -15,9 +18,10 @@ public partial class RouteManager : MonoBehaviour
     
     public void DispatchRoute(List<Town> route)
     {
-        // Copy so TownManager can clear its list safely
         List<Town> routeCopy = new List<Town>(route);
         StartCoroutine(MoveTruckAlongRoute(routeCopy));
+        if (ConnectionManager.Instance != null)
+            ConnectionManager.Instance.ShowRoute(routeCopy);
     }
 
     private IEnumerator MoveTruckAlongRoute(List<Town> route)
@@ -42,15 +46,17 @@ public partial class RouteManager : MonoBehaviour
 
             yield return StartCoroutine(MoveTruckTo(truck, b.transform.position, speed));
 
-            // Visible stop at border nodes (optional but feels good)
-            if (b is BorderNode)
-                yield return new WaitForSeconds(0.25f);
+            if (b is BorderNode border)
+            {
+                yield return StartCoroutine(HandleBorderInspection(border));
+            }
         }
-
+        if (ConnectionManager.Instance != null)
+            ConnectionManager.Instance.HideAll();
         Destroy(truck);
     }
 
-    // Make sure you have this helper already; if not, paste it too:
+    
     private IEnumerator MoveTruckTo(GameObject truck, Vector3 target, float speed)
     {
         while (Vector3.Distance(truck.transform.position, target) > 0.01f)
@@ -69,5 +75,49 @@ public partial class RouteManager : MonoBehaviour
         }
 
         truck.transform.position = target;
+    }
+    private IEnumerator FlashBorder(BorderNode border, float duration)
+    {
+        SpriteRenderer sr = border.GetComponent<SpriteRenderer>();
+        if (sr == null) yield break;
+
+        Color originalColor = sr.color;
+        Vector3 originalScale = border.transform.localScale;
+
+        float timer = 0f;
+
+        while (timer < duration)
+        {
+            sr.color = Color.red;
+            border.transform.localScale = originalScale * 1.15f;
+
+            yield return new WaitForSeconds(0.15f);
+
+            sr.color = originalColor;
+            border.transform.localScale = originalScale;
+
+            yield return new WaitForSeconds(0.15f);
+
+            timer += 0.3f;
+        }
+
+        sr.color = originalColor;
+        border.transform.localScale = originalScale;
+    }
+    private IEnumerator HandleBorderInspection(BorderNode border)
+    {
+        yield return new WaitForSeconds(0.25f);
+
+        bool inspected = forceInspection || Random.value < border.inspectionChance;
+        if (!inspected) yield break;
+
+        Debug.Log($"INSPECTION at {border.townName} ({border.type})");
+
+        // Flash border visually
+        yield return StartCoroutine(FlashBorder(border, border.inspectionDelay));
+
+        // Extra wait 
+        if (border.inspectionDelay > 0f)
+            yield return new WaitForSeconds(0.5f);
     }
 }

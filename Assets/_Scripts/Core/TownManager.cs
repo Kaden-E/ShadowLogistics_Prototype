@@ -111,6 +111,8 @@ public class TownManager : MonoBehaviour
         ClearSelectedVisuals();
         plannedRoute.Clear();
         UpdatePlannedLine();
+        if (ConnectionManager.Instance != null)
+            ConnectionManager.Instance.HideAll();
     }
 
     private void UndoLast()
@@ -139,5 +141,9 @@ public class TownManager : MonoBehaviour
 
         for (int i = 0; i < plannedRoute.Count; i++)
             plannedRouteLine.SetPosition(i, plannedRoute[i].transform.position);
+        
+        // Only show network segments if there's a real planned route (2+ nodes)
+        if (plannedRoute.Count >= 2 && ConnectionManager.Instance != null)
+            ConnectionManager.Instance.ShowRoute(plannedRoute);
     }
 }

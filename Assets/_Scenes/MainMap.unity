@@ -132,6 +132,7 @@ GameObject:
   m_Component:
   - component: {fileID: 64341408}
   - component: {fileID: 64341409}
+  - component: {fileID: 64341410}
   m_Layer: 0
   m_Name: Conn_Mirem-Volsen
   m_TagString: Untagged
@@ -258,6 +259,20 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &64341410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 64341407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f63dd7acb26f7334bb13e469066ed8a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  from: {fileID: 1574444524}
+  to: {fileID: 1856155422}
 --- !u!1 &155466788
 GameObject:
   m_ObjectHideFlags: 0
@@ -268,6 +283,7 @@ GameObject:
   m_Component:
   - component: {fileID: 155466789}
   - component: {fileID: 155466790}
+  - component: {fileID: 155466791}
   m_Layer: 0
   m_Name: 'Conn_Platio-Darein '
   m_TagString: Untagged
@@ -394,6 +410,79 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &155466791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 155466788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f63dd7acb26f7334bb13e469066ed8a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  from: {fileID: 1543197977}
+  to: {fileID: 925992664}
+--- !u!1 &297590051
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 297590052}
+  - component: {fileID: 297590053}
+  m_Layer: 0
+  m_Name: ConnectionManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &297590052
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 297590051}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 883347786}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &297590053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 297590051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d51acd66b83a4d5438ae6f1b764a986a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allConnections:
+  - {fileID: 1611007036}
+  - {fileID: 1678914130}
+  - {fileID: 2078401546}
+  - {fileID: 803916809}
+  - {fileID: 64341410}
+  - {fileID: 596773523}
+  - {fileID: 1415058785}
+  - {fileID: 690072381}
+  - {fileID: 1502331530}
+  - {fileID: 155466791}
+  - {fileID: 1265686272}
+  - {fileID: 748390439}
+  - {fileID: 1038614326}
+  - {fileID: 540257774}
 --- !u!1 &458660165
 GameObject:
   m_ObjectHideFlags: 0
@@ -625,6 +714,7 @@ GameObject:
   m_Component:
   - component: {fileID: 540257772}
   - component: {fileID: 540257773}
+  - component: {fileID: 540257774}
   m_Layer: 0
   m_Name: Conn_Tefti_BC_Backroad
   m_TagString: Untagged
@@ -751,6 +841,20 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &540257774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 540257771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f63dd7acb26f7334bb13e469066ed8a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  from: {fileID: 571921215}
+  to: {fileID: 1174910538}
 --- !u!1 &565645878
 GameObject:
   m_ObjectHideFlags: 0
@@ -944,6 +1048,7 @@ GameObject:
   m_Component:
   - component: {fileID: 596773521}
   - component: {fileID: 596773522}
+  - component: {fileID: 596773523}
   m_Layer: 0
   m_Name: Conn_Volsen_AB_Motorway
   m_TagString: Untagged
@@ -1070,6 +1175,20 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &596773523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 596773520}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f63dd7acb26f7334bb13e469066ed8a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  from: {fileID: 1856155422}
+  to: {fileID: 704332207}
 --- !u!1 &636142384
 GameObject:
   m_ObjectHideFlags: 0
@@ -1472,6 +1591,7 @@ GameObject:
   m_Component:
   - component: {fileID: 690072379}
   - component: {fileID: 690072380}
+  - component: {fileID: 690072381}
   m_Layer: 0
   m_Name: Conn_Platio_AB_Backroad
   m_TagString: Untagged
@@ -1598,6 +1718,25 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &690072381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690072378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f63dd7acb26f7334bb13e469066ed8a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  from: {fileID: 1543197977}
+  to: {fileID: 1667694691}
+--- !u!1 &693684075 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3316390725932677957, guid: 06ef95a8408ff4646b1dbafd5d68d055, type: 3}
+  m_PrefabInstance: {fileID: 2472864088025321927}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &704332204
 GameObject:
   m_ObjectHideFlags: 0
@@ -1707,6 +1846,10 @@ MonoBehaviour:
   sideB: 1
   type: 0
   speedMultiplier: 1.5
+  inspectionChance: 0.15
+  inspectionDelay: 2
+  canFailDelivery: 0
+  failChanceIfInspected: 0.25
 --- !u!61 &704332208
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1762,6 +1905,7 @@ GameObject:
   m_Component:
   - component: {fileID: 748390437}
   - component: {fileID: 748390438}
+  - component: {fileID: 748390439}
   m_Layer: 0
   m_Name: Conn_Darein_BC_Motorway
   m_TagString: Untagged
@@ -1888,6 +2032,20 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &748390439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748390436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f63dd7acb26f7334bb13e469066ed8a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  from: {fileID: 925992664}
+  to: {fileID: 2027697164}
 --- !u!1 &803916806
 GameObject:
   m_ObjectHideFlags: 0
@@ -1898,6 +2056,7 @@ GameObject:
   m_Component:
   - component: {fileID: 803916807}
   - component: {fileID: 803916808}
+  - component: {fileID: 803916809}
   m_Layer: 0
   m_Name: Conn_Mirem_AB_Motorway
   m_TagString: Untagged
@@ -2024,6 +2183,20 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &803916809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 803916806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f63dd7acb26f7334bb13e469066ed8a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  from: {fileID: 1574444524}
+  to: {fileID: 704332207}
 --- !u!1 &881916510
 GameObject:
   m_ObjectHideFlags: 0
@@ -2093,6 +2266,7 @@ Transform:
   - {fileID: 1935175482}
   - {fileID: 1373451233}
   - {fileID: 649076762}
+  - {fileID: 297590052}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &925992660
@@ -2328,6 +2502,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1038614324}
   - component: {fileID: 1038614325}
+  - component: {fileID: 1038614326}
   m_Layer: 0
   m_Name: Conn_Tefti_BC_Motorway
   m_TagString: Untagged
@@ -2454,6 +2629,20 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &1038614326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1038614323}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f63dd7acb26f7334bb13e469066ed8a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  from: {fileID: 571921215}
+  to: {fileID: 2027697164}
 --- !u!1 &1174910535
 GameObject:
   m_ObjectHideFlags: 0
@@ -2562,6 +2751,10 @@ MonoBehaviour:
   sideB: 1
   type: 0
   speedMultiplier: 0.9
+  inspectionChance: 0.15
+  inspectionDelay: 2
+  canFailDelivery: 0
+  failChanceIfInspected: 0.25
 --- !u!61 &1174910539
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2666,6 +2859,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1265686270}
   - component: {fileID: 1265686271}
+  - component: {fileID: 1265686272}
   m_Layer: 0
   m_Name: Conn_Darein_BC_Backroad
   m_TagString: Untagged
@@ -2792,6 +2986,20 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &1265686272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1265686269}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f63dd7acb26f7334bb13e469066ed8a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  from: {fileID: 925992664}
+  to: {fileID: 1174910538}
 --- !u!1 &1373451232
 GameObject:
   m_ObjectHideFlags: 0
@@ -2836,6 +3044,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec12e430e2100fa46b117d907062fcfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  forceInspection: 1
   truckPrefab: {fileID: 5975611670625242390, guid: 02372553ee421444f86889280235d582, type: 3}
 --- !u!1 &1415058782
 GameObject:
@@ -2847,6 +3056,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1415058783}
   - component: {fileID: 1415058784}
+  - component: {fileID: 1415058785}
   m_Layer: 0
   m_Name: Conn_Volsen_AB_Backroad
   m_TagString: Untagged
@@ -2973,6 +3183,20 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &1415058785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1415058782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f63dd7acb26f7334bb13e469066ed8a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  from: {fileID: 1856155422}
+  to: {fileID: 1667694691}
 --- !u!1 &1439945219
 GameObject:
   m_ObjectHideFlags: 0
@@ -3067,6 +3291,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1502331528}
   - component: {fileID: 1502331529}
+  - component: {fileID: 1502331530}
   m_Layer: 0
   m_Name: 'Conn_Platio_AB_Motorway '
   m_TagString: Untagged
@@ -3193,6 +3418,20 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &1502331530
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1502331527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f63dd7acb26f7334bb13e469066ed8a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  from: {fileID: 1543197977}
+  to: {fileID: 704332207}
 --- !u!1 &1514571934
 GameObject:
   m_ObjectHideFlags: 0
@@ -3597,6 +3836,20 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8855078349567588261, guid: 06ef95a8408ff4646b1dbafd5d68d055, type: 3}
   m_PrefabInstance: {fileID: 2472864088025321927}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1611007036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693684075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f63dd7acb26f7334bb13e469066ed8a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  from: {fileID: 1574444524}
+  to: {fileID: 1667694691}
 --- !u!1 &1667694688
 GameObject:
   m_ObjectHideFlags: 0
@@ -3706,6 +3959,10 @@ MonoBehaviour:
   sideB: 1
   type: 0
   speedMultiplier: 0.9
+  inspectionChance: 0.15
+  inspectionDelay: 2
+  canFailDelivery: 0
+  failChanceIfInspected: 0.25
 --- !u!61 &1667694692
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3761,6 +4018,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1678914128}
   - component: {fileID: 1678914129}
+  - component: {fileID: 1678914130}
   m_Layer: 0
   m_Name: Conn_Tefti-Monsen
   m_TagString: Untagged
@@ -3887,6 +4145,20 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &1678914130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1678914127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f63dd7acb26f7334bb13e469066ed8a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  from: {fileID: 571921215}
+  to: {fileID: 636142387}
 --- !u!1 &1856155419
 GameObject:
   m_ObjectHideFlags: 0
@@ -4181,6 +4453,10 @@ MonoBehaviour:
   sideB: 1
   type: 0
   speedMultiplier: 1.5
+  inspectionChance: 0.15
+  inspectionDelay: 2
+  canFailDelivery: 0
+  failChanceIfInspected: 0.25
 --- !u!61 &2027697165
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4236,8 +4512,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2078401544}
   - component: {fileID: 2078401545}
+  - component: {fileID: 2078401546}
   m_Layer: 0
-  m_Name: Conn_Tefti-Monsen (1)
+  m_Name: Conn_Monsen_BC_Motorway
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4362,6 +4639,20 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &2078401546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2078401543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f63dd7acb26f7334bb13e469066ed8a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  from: {fileID: 636142387}
+  to: {fileID: 2027697164}
 --- !u!1001 &2472864088025321927
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4481,7 +4772,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3316390725932677957, guid: 06ef95a8408ff4646b1dbafd5d68d055, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1611007036}
   m_SourcePrefab: {fileID: 100100000, guid: 06ef95a8408ff4646b1dbafd5d68d055, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
