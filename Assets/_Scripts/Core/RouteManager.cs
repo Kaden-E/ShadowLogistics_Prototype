@@ -4,12 +4,28 @@ using UnityEngine;
 
 public partial class RouteManager : MonoBehaviour
 {
+    private DeliveryOutcomeService deliveryOutcome;
+    private bool wasInspectedThisRun;
+    private bool illegalFoundThisRun;
+    private bool bribeUsedThisRun;
+    private bool runFailed;
+    
+    private float runStartTime;
+    
+    
     [Header("Debug")]
     public bool forceInspection = false;
     
     public static RouteManager Instance;
 
     public GameObject truckPrefab;
+    
+    private void Start()
+    {
+        deliveryOutcome = FindFirstObjectByType<DeliveryOutcomeService>();
+        if (deliveryOutcome == null)
+            Debug.LogError("No DeliveryOutcomeService found. Is Core in the scene?");
+    }
     
     void Awake()
     {
@@ -27,6 +43,11 @@ public partial class RouteManager : MonoBehaviour
     private IEnumerator MoveTruckAlongRoute(List<Town> route)
     {
         if (route == null || route.Count < 2) yield break;
+        wasInspectedThisRun = false;
+        illegalFoundThisRun = false;
+        bribeUsedThisRun = false;
+        runFailed = false;
+        runStartTime = Time.time;
 
         GameObject truck = Instantiate(truckPrefab, route[0].transform.position, Quaternion.identity);
 
@@ -49,10 +70,46 @@ public partial class RouteManager : MonoBehaviour
             if (b is BorderNode border)
             {
                 yield return StartCoroutine(HandleBorderInspection(border));
+
+                if (runFailed)
+                {
+                    Debug.Log("Run terminated due to inspection.");
+                    break;
+                }
             }
         }
         if (ConnectionManager.Instance != null)
             ConnectionManager.Instance.HideAll();
+
+        bool success = !runFailed;
+
+        if (deliveryOutcome != null)
+        {
+            var result = new DeliveryResult
+            {
+                contractId = "route_test", // later comes from contract scene
+                origin = route[0].name,
+                destination = route[route.Count - 1].name,
+                tier = 1, // later comes from contract
+
+                success = success,
+                wasInspected = wasInspectedThisRun,
+                illegalFound = illegalFoundThisRun,
+                bribeUsed = bribeUsedThisRun,
+
+                instabilityAtStart = 0,
+                riskAtStart = 0,
+
+                payout = 0,
+                penalty = success ? 0 : 0,
+                heatChange = illegalFoundThisRun ? 5 : (wasInspectedThisRun ? 1 : 0),
+
+                timeTakenSeconds = Time.time - runStartTime
+            };
+
+            deliveryOutcome.CompleteDelivery(result);
+        }
+
         Destroy(truck);
     }
 
@@ -109,15 +166,58 @@ public partial class RouteManager : MonoBehaviour
         yield return new WaitForSeconds(0.25f);
 
         bool inspected = forceInspection || Random.value < border.inspectionChance;
-        if (!inspected) yield break;
+
+        if (!inspected)
+            yield break;
+
+        wasInspectedThisRun = true;
 
         Debug.Log($"INSPECTION at {border.townName} ({border.type})");
 
-        // Flash border visually
+        // Visual feedback
         yield return StartCoroutine(FlashBorder(border, border.inspectionDelay));
 
-        // Extra wait 
         if (border.inspectionDelay > 0f)
             yield return new WaitForSeconds(0.5f);
+
+        // --- Illegal detection logic ---
+        // For now, simple placeholder detection chance
+        float illegalDetectionChance = 0.3f; // 30% chance if carrying illegal goods
+
+        bool carryingIllegalGoods = false; 
+        // Replace later with real cargo flag from contract system
+
+        if (carryingIllegalGoods && Random.value < illegalDetectionChance)
+        {
+            illegalFoundThisRun = true;
+            runFailed = true;
+
+            Debug.Log("Illegal goods discovered! Delivery failed.");
+
+            yield break;
+        }
+
+        // --- Bribe logic placeholder (future expansion) ---
+        bool attemptBribe = false; // hook into UI later
+
+        if (attemptBribe)
+        {
+            bribeUsedThisRun = true;
+
+            bool bribeSuccess = Random.value < 0.7f; // 70% success chance
+
+            if (!bribeSuccess)
+            {
+                illegalFoundThisRun = true;
+                runFailed = true;
+
+                Debug.Log("Bribe failed! Delivery failed.");
+                yield break;
+            }
+
+            Debug.Log("Bribe succeeded.");
+        }
+
+        Debug.Log("Inspection cleared.");
     }
 }
