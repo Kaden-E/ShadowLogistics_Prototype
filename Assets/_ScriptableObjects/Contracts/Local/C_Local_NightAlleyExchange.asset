@@ -20,3 +20,4 @@ MonoBehaviour:
   baseRisk: 0.15
   maxDistanceKm: 6
   timeLimitSeconds: 0
+  isIllegal: 1

@@ -2577,6 +2577,7 @@ GameObject:
   - component: {fileID: 1280600815}
   - component: {fileID: 1280600814}
   - component: {fileID: 1280600817}
+  - component: {fileID: 1280600818}
   m_Layer: 0
   m_Name: Core
   m_TagString: Untagged
@@ -2634,6 +2635,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6dc731b7caa9ec941a02e753c7c31210, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1280600818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280600813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 823b05f2b7b08134b97943dbb78e151a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1284800036
@@ -2786,6 +2799,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b175bfa745776ce4d9f2c05bb0dfb316, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mapSceneName: MainMap
   availableContracts:
   - {fileID: 11400000, guid: 76b12504cd1165346ae240fb6df64c11, type: 2}
   - {fileID: 11400000, guid: 706e1778244ca4b469dfd177231453a8, type: 2}
@@ -2834,7 +2848,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1448841621
 MonoBehaviour:
   m_ObjectHideFlags: 0

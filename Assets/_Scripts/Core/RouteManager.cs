@@ -4,6 +4,7 @@ using UnityEngine;
 
 public partial class RouteManager : MonoBehaviour
 {
+    private ContractContextService contractContext;
     private DeliveryOutcomeService deliveryOutcome;
     private bool wasInspectedThisRun;
     private bool illegalFoundThisRun;
@@ -25,6 +26,10 @@ public partial class RouteManager : MonoBehaviour
         deliveryOutcome = FindFirstObjectByType<DeliveryOutcomeService>();
         if (deliveryOutcome == null)
             Debug.LogError("No DeliveryOutcomeService found. Is Core in the scene?");
+        
+        contractContext = FindFirstObjectByType<ContractContextService>();
+        if (contractContext == null)
+            Debug.LogWarning("No ContractContextService found. Contract data will be defaulted.");
     }
     
     void Awake()
@@ -85,12 +90,18 @@ public partial class RouteManager : MonoBehaviour
 
         if (deliveryOutcome != null)
         {
+            var active = (contractContext != null && contractContext.HasActive)
+                ? contractContext.Active
+                : null;
+
             var result = new DeliveryResult
             {
-                contractId = "route_test", // later comes from contract scene
-                origin = route[0].name,
-                destination = route[route.Count - 1].name,
-                tier = 1, // later comes from contract
+                contractId = active != null ? active.contractId : "route_test",
+
+                origin = active != null ? active.origin : route[0].name,
+                destination = active != null ? active.destination : route[route.Count - 1].name,
+
+                tier = active != null ? active.tier : 1,
 
                 success = success,
                 wasInspected = wasInspectedThisRun,
@@ -98,10 +109,11 @@ public partial class RouteManager : MonoBehaviour
                 bribeUsed = bribeUsedThisRun,
 
                 instabilityAtStart = 0,
-                riskAtStart = 0,
+                riskAtStart = active != null ? active.riskPercent : 0,
 
-                payout = 0,
-                penalty = success ? 0 : 0,
+                payout = active != null ? active.payout : 0,
+                penalty = active != null ? active.penalty : 0,
+
                 heatChange = illegalFoundThisRun ? 5 : (wasInspectedThisRun ? 1 : 0),
 
                 timeTakenSeconds = Time.time - runStartTime
@@ -179,13 +191,25 @@ public partial class RouteManager : MonoBehaviour
 
         if (border.inspectionDelay > 0f)
             yield return new WaitForSeconds(0.5f);
-
+        
         // --- Illegal detection logic ---
-        // For now, simple placeholder detection chance
-        float illegalDetectionChance = 0.3f; // 30% chance if carrying illegal goods
 
-        bool carryingIllegalGoods = false; 
-        // Replace later with real cargo flag from contract system
+        bool carryingIllegalGoods =
+            contractContext != null &&
+            contractContext.HasActive &&
+            contractContext.Active.hasIllegalGoods;
+
+        float illegalDetectionChance = 0.3f; // temporary placeholder
+
+        if (carryingIllegalGoods && Random.value < illegalDetectionChance)
+        {
+            illegalFoundThisRun = true;
+            runFailed = true;
+
+            Debug.Log("Illegal goods discovered! Delivery failed.");
+
+            yield break;
+        }
 
         if (carryingIllegalGoods && Random.value < illegalDetectionChance)
         {

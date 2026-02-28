@@ -15,4 +15,8 @@ public class ContractDefinition : ScriptableObject
     [Header("Route")]
     public float maxDistanceKm = 5f;
     public float timeLimitSeconds = 0f; // 0 = no timer yet (tier 1/2)
+    
+    [Header("Cargo Type")]
+    public bool isIllegal = false;
+    
 }
