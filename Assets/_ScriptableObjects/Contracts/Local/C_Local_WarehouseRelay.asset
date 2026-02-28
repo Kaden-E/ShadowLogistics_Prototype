@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e003bfcc10524c24fb61c74fd7a72b9e, type: 3}
+  m_Name: C_Local_WarehouseRelay
+  m_EditorClassIdentifier: 
+  contractName: Warehouse Relay
+  description: Transfer cargo between two private warehouses across the industrial
+    sector. Slightly longer drive, moderate visibility.
+  tier: 0
+  basePayout: 150
+  baseRisk: 0.18
+  maxDistanceKm: 8
+  timeLimitSeconds: 0
