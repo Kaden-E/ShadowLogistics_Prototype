@@ -16,6 +16,7 @@ public class EconomyController : MonoBehaviour
     public Button buyUpgradeButton;
 
     [Header("Player State")]
+    private int contractsCompleted = 0;
     public int money = 2000;
     public int reputation = 0;
     public bool hiddenCompartment = false;
@@ -25,12 +26,12 @@ public class EconomyController : MonoBehaviour
     // Simple contract data container
     private struct Contract
     {
-        public string cargo;
-        public string legality;
-        public string origin;
-        public string destination;
+        public CargoData cargo;
+        public CountryData origin;
+        public CountryData destination;
+
         public int basePay;
-        public int riskPercent; // 0-100
+        public int riskPercent;
         public int timeLimitDays;
     }
 
@@ -46,86 +47,82 @@ public class EconomyController : MonoBehaviour
 
 private void GenerateContract()
 {
-    // Safety checks so we never hard-crash
     if (cargos == null || cargos.Length == 0)
     {
-        UpdateUI("Assign at least 1 Cargo in the Inspector (GameController > EconomyController).");
-        Debug.LogError("EconomyController.GenerateContract: cargos array is empty/null.");
+        UpdateUI("Assign at least 1 Cargo in the Inspector.");
+        Debug.LogError("GenerateContract: cargos not assigned.");
         return;
     }
 
     if (countries == null || countries.Length < 2)
     {
-        UpdateUI("Assign at least 2 Countries in the Inspector (GameController > EconomyController).");
-        Debug.LogError("EconomyController.GenerateContract: countries array needs 2+ entries.");
+        UpdateUI("Assign at least 2 Countries in the Inspector.");
+        Debug.LogError("GenerateContract: countries not assigned or < 2.");
         return;
     }
 
-    // Pick a valid cargo
-    CargoData randomCargo = null;
-    for (int i = 0; i < 20 && randomCargo == null; i++)
-        randomCargo = cargos[Random.Range(0, cargos.Length)];
+    // Pick non-null cargo
+    CargoData cargoPick = null;
+    for (int i = 0; i < 20 && cargoPick == null; i++)
+        cargoPick = cargos[Random.Range(0, cargos.Length)];
 
-    if (randomCargo == null)
+    if (cargoPick == null)
     {
-        UpdateUI("One or more Cargo slots are None. Fix Inspector references.");
-        Debug.LogError("EconomyController.GenerateContract: all cargo entries were null.");
+        UpdateUI("Cargo array contains only None entries.");
+        Debug.LogError("GenerateContract: cargoPick null.");
         return;
     }
 
-    // Pick a valid origin
-    CountryData origin = null;
-    for (int i = 0; i < 20 && origin == null; i++)
-        origin = countries[Random.Range(0, countries.Length)];
+    // Pick non-null origin
+    CountryData originPick = null;
+    for (int i = 0; i < 20 && originPick == null; i++)
+        originPick = countries[Random.Range(0, countries.Length)];
 
-    if (origin == null)
+    if (originPick == null)
     {
-        UpdateUI("One or more Country slots are None. Fix Inspector references.");
-        Debug.LogError("EconomyController.GenerateContract: all country entries were null (origin).");
+        UpdateUI("Countries array contains only None entries.");
+        Debug.LogError("GenerateContract: originPick null.");
         return;
     }
 
-    // Pick a destination that is different from origin
-    CountryData destination = origin;
+    // Pick destination different from origin
+    CountryData destPick = originPick;
     int safety = 0;
-    while (destination == origin && safety++ < 50)
-        destination = countries[Random.Range(0, countries.Length)];
+    while (destPick == originPick && safety++ < 50)
+        destPick = countries[Random.Range(0, countries.Length)];
 
-    if (destination == null || destination == origin)
+    if (destPick == null || destPick == originPick)
     {
-        UpdateUI("Could not pick a valid destination. Ensure you have 2+ distinct Countries assigned.");
-        Debug.LogError("EconomyController.GenerateContract: destination invalid.");
+        UpdateUI("Could not pick a valid destination. Ensure 2+ distinct countries are assigned.");
+        Debug.LogError("GenerateContract: destPick invalid.");
         return;
     }
 
-    // Fill contract fields
-    current = new Contract();
-    current.cargo = randomCargo.cargoName;
-    current.legality = randomCargo.isIllegal ? "Illegal" : "Legal";
-    current.basePay = randomCargo.basePay;
-    current.origin = origin.countryName;
-    current.destination = destination.countryName;
-    current.timeLimitDays = Random.Range(1, 4);
+    // Build contract
+    current = new Contract
+    {
+        cargo = cargoPick,
+        origin = originPick,
+        destination = destPick,
+        basePay = cargoPick.basePay,
+        timeLimitDays = Random.Range(1, 4)
+    };
 
-    // Risk calculation
-    int risk = randomCargo.isIllegal ? 45 : 20;
-
-    // Country instability adds risk
-    risk += origin.instability;
-    risk += destination.instability;
-
-    // Reputation makes you a slightly bigger target
+    // Risk
+    int risk = cargoPick.isIllegal ? 45 : 20;
+    risk += originPick.instability;
+    risk += destPick.instability;
     risk += Mathf.Clamp(reputation / 5, 0, 10);
 
-    // Upgrade reduces risk on illegal cargo
-    if (hiddenCompartment && randomCargo.isIllegal)
+    if (hiddenCompartment && cargoPick.isIllegal)
         risk -= 12;
 
-    // Clamp risk to sensible bounds
     current.riskPercent = Mathf.Clamp(risk, 5, 90);
 
-    // Enable running the contract + refresh UI
     runButton.interactable = true;
+
+    Debug.Log($"Generated contract: {current.origin.countryName}({current.origin.instability}) -> {current.destination.countryName}({current.destination.instability})");
+
     UpdateUI("Contract generated.");
 }
 
@@ -140,10 +137,29 @@ private void GenerateContract()
             default: return 0;
         }
     }
+    private void CheckForWorldShift()
+    {
+        if (contractsCompleted % 3 != 0)
+            return;
+
+        if (countries == null || countries.Length == 0)
+            return;
+
+        // Pick random country
+        CountryData target = countries[Random.Range(0, countries.Length)];
+        if (target == null)
+            return;
+
+        int shift = Random.Range(-2, 3); // -2, -1, 0, 1, 2
+        target.instability = Mathf.Clamp(target.instability + shift, 0, 20);
+
+        Debug.Log($"World Shift: {target.countryName} instability changed by {shift}. New value: {target.instability}");
+        Debug.Log($"World Shift: {target.countryName} instability now = {target.instability}");
+    }
 
     private void RunShipment()
     {
-        if (string.IsNullOrEmpty(current.cargo))
+        if (current.cargo == null)
         {
             UpdateUI("No contract. Generate one first.");
             return;
@@ -158,7 +174,9 @@ private void GenerateContract()
             // Success
             int payout = CalculatePayout(current);
             money += payout;
-            reputation += (current.legality == "Illegal") ? 2 : 1;
+
+            // Rep: illegal gives more rep
+            reputation += current.cargo.isIllegal ? 2 : 1;
 
             UpdateUI($"SUCCESS! You earned £{payout}.");
         }
@@ -177,19 +195,23 @@ private void GenerateContract()
             }
             else if (severityRoll <= 90)
             {
-                // Full confiscation (no pay)
+                // Full confiscation
                 reputation = Mathf.Max(0, reputation - 2);
-                UpdateUI($"CONFISCATED. No payout.");
+                UpdateUI("CONFISCATED. No payout.");
             }
             else
             {
-                // Arrest/fine
+                // Arrest / fine
                 int fine = 1200;
                 money -= fine;
                 reputation = Mathf.Max(0, reputation - 4);
                 UpdateUI($"ARRESTED. Fine: £{fine}.");
             }
         }
+
+        // Completed contract + world shift check
+        contractsCompleted++;
+        CheckForWorldShift();
 
         // Clear contract
         current = default;
@@ -199,16 +221,17 @@ private void GenerateContract()
     private int CalculatePayout(Contract c)
     {
         // Base × distance-ish modifier × risk tier
-        float distanceMod = (c.origin == "Country A" && c.destination == "Country B") ||
-                            (c.origin == "Country B" && c.destination == "Country A") ? 1.05f :
-                            (c.origin == "Country B" && c.destination == "Country C") ||
-                            (c.origin == "Country C" && c.destination == "Country B") ? 1.10f :
-                            1.20f; // A <-> C is “furthest”
+        string o = c.origin.countryName;
+        string d = c.destination.countryName;
+
+        float distanceMod =
+            ((o == "Country A" && d == "Country B") || (o == "Country B" && d == "Country A")) ? 1.05f :
+            ((o == "Country B" && d == "Country C") || (o == "Country C" && d == "Country B")) ? 1.10f :
+            1.20f; // A <-> C is “furthest”
 
         float riskTier = Mathf.Lerp(1.0f, 1.45f, c.riskPercent / 100f);
 
         int payout = Mathf.RoundToInt(c.basePay * distanceMod * riskTier);
-
         return payout;
     }
 
@@ -241,12 +264,14 @@ private void GenerateContract()
             $"Reputation: {reputation}\n" +
             $"Upgrade: Hidden Compartment = {(hiddenCompartment ? "YES" : "NO")}";
 
-        if (!string.IsNullOrEmpty(current.cargo))
+        if (current.cargo != null)
         {
             contractText.text =
                 $"CONTRACT\n" +
-                $"{current.origin} → {current.destination}\n" +
-                $"Cargo: {current.cargo} ({current.legality})\n" +
+                $"{current.origin.countryName} → {current.destination.countryName}\n" +
+                $"Origin Instability: {current.origin.instability}\n" +
+                $"Destination Instability: {current.destination.instability}\n" +
+                $"Cargo: {current.cargo.cargoName} ({(current.cargo.isIllegal ? "Illegal" : "Legal")})\n" +
                 $"Base Pay: £{current.basePay}\n" +
                 $"Risk: {current.riskPercent}%\n" +
                 $"Time Limit: {current.timeLimitDays} days";
@@ -255,7 +280,7 @@ private void GenerateContract()
         {
             contractText.text = "No active contract.";
         }
-
+        
         // Upgrade button disabled if owned
         buyUpgradeButton.interactable = !hiddenCompartment;
     }
