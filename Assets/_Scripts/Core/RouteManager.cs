@@ -1,110 +1,56 @@
-using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-public class RouteManager : MonoBehaviour
+public partial class RouteManager : MonoBehaviour
 {
     public static RouteManager Instance;
-    public BorderNode[] borderNodes;
 
     public GameObject truckPrefab;
-
+    
     void Awake()
     {
         Instance = this;
     }
-
-    public void CreateRoute(Town from, Town to)
+    
+    public void DispatchRoute(List<Town> route)
     {
-        // Different countries? go via border
-        if (from.country != to.country)
-        {
-            BorderNode crossing = FindBestCrossing(from, to);
-            if (crossing == null)
-            {
-                Debug.Log("No border crossing set up!");
-                return;
-            }
-
-            StartCoroutine(MoveTruckViaBorder(from, to, crossing));
-            return;
-        }
-
-        // Same country: your normal logic
-        if (!from.connectedTowns.Contains(to))
-        {
-            Debug.Log("No connection between " + from.townName + " and " + to.townName);
-            return;
-        }
-
-        StartCoroutine(MoveTruck(from, to));
+        // Copy so TownManager can clear its list safely
+        List<Town> routeCopy = new List<Town>(route);
+        StartCoroutine(MoveTruckAlongRoute(routeCopy));
     }
 
-    private BorderNode FindBestCrossing(Town from, Town to)
+    private IEnumerator MoveTruckAlongRoute(List<Town> route)
     {
-        BorderNode best = null;
-        float bestScore = float.MaxValue;
+        if (route == null || route.Count < 2) yield break;
 
-        foreach (BorderNode b in borderNodes)
+        GameObject truck = Instantiate(truckPrefab, route[0].transform.position, Quaternion.identity);
+
+        float baseSpeed = 2f;
+
+        for (int i = 0; i < route.Count - 1; i++)
         {
-            if (b == null)
-                continue;
+            Town a = route[i];
+            Town b = route[i + 1];
 
-            // Ensure this crossing supports these two countries
-            bool supportsCountries =
-                (b.sideA == from.country && b.sideB == to.country) ||
-                (b.sideB == from.country && b.sideA == to.country);
+            // Segment speed: if either endpoint is a BorderNode, apply its multiplier
+            float multiplier = 1f;
+            if (a is BorderNode ba) multiplier *= ba.speedMultiplier;
+            if (b is BorderNode bb) multiplier *= bb.speedMultiplier;
 
-            if (!supportsCountries)
-                continue;
+            float speed = baseSpeed * multiplier;
 
-            // Distance from town -> border -> town
-            float d1 = Vector3.Distance(from.transform.position, b.transform.position);
-            float d2 = Vector3.Distance(b.transform.position, to.transform.position);
+            yield return StartCoroutine(MoveTruckTo(truck, b.transform.position, speed));
 
-            // Base truck speed (must match your movement speed)
-            float baseSpeed = 2f;
-
-            // Higher multiplier = faster crossing
-            float totalTime = (d1 + d2) / (baseSpeed * b.speedMultiplier);
-
-            if (totalTime < bestScore)
-            {
-                bestScore = totalTime;
-                best = b;
-            }
+            // Visible stop at border nodes (optional but feels good)
+            if (b is BorderNode)
+                yield return new WaitForSeconds(0.25f);
         }
-
-        return best;
-    }
-
-    private IEnumerator MoveTruck(Town from, Town to)
-    {
-        GameObject truck = Instantiate(truckPrefab, from.transform.position, Quaternion.identity);
-
-        float baseSpeed = 2f; // tweak this
-        yield return StartCoroutine(MoveTruckTo(truck, to.transform.position, baseSpeed));
-
-        Destroy(truck);
-    }
-    private IEnumerator MoveTruckViaBorder(Town from, Town to, BorderNode border)
-    {
-        GameObject truck = Instantiate(truckPrefab, from.transform.position, Quaternion.identity);
-
-        float baseSpeed = 2f; // MUST match your FindBestCrossing baseSpeed
-        float speed = baseSpeed * border.speedMultiplier;
-
-        // Leg 1: town -> border
-        yield return StartCoroutine(MoveTruckTo(truck, border.transform.position, speed));
-
-        // Visible stop at border
-        yield return new WaitForSeconds(0.25f);
-
-        // Leg 2: border -> town
-        yield return StartCoroutine(MoveTruckTo(truck, to.transform.position, speed));
 
         Destroy(truck);
     }
 
+    // Make sure you have this helper already; if not, paste it too:
     private IEnumerator MoveTruckTo(GameObject truck, Vector3 target, float speed)
     {
         while (Vector3.Distance(truck.transform.position, target) > 0.01f)
@@ -122,7 +68,6 @@ public class RouteManager : MonoBehaviour
             yield return null;
         }
 
-        // Exact stop
         truck.transform.position = target;
     }
 }

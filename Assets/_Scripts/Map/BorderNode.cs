@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BorderNode : MonoBehaviour
+public class BorderNode : Town
 {
     public enum CrossingType { Motorway, Backroad }
 
