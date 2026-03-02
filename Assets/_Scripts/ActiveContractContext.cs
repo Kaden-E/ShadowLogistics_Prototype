@@ -1,4 +1,5 @@
 using System;
+using ShadowLogistics.Cargo;
 
 [Serializable]
 public class ActiveContractContext
@@ -16,4 +17,6 @@ public class ActiveContractContext
 
     // 0–100
     public int riskPercent;
+    public CargoSize cargoSize;
+    
 }

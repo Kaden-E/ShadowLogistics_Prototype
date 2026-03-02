@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ShadowLogistics.Cargo;
+using ShadowLogistics.Inspection;
+using ShadowLogistics.Vehicles;
 
 public partial class RouteManager : MonoBehaviour
 {
@@ -11,7 +14,16 @@ public partial class RouteManager : MonoBehaviour
     private bool bribeUsedThisRun;
     private bool runFailed;
     
+    
     private float runStartTime;
+    
+    [SerializeField] private CargoConfigSO _cargoConfig;
+    [SerializeField] private InspectionSeverityConfigSO _inspectConfig;
+    
+    private int _runFoundUnits;
+    private InspectionSeverityBand _runSeverityBand;
+    private int _runFineAmount;
+    private bool _wasCaughtThisRun;
     
     
     [Header("Debug")]
@@ -53,6 +65,10 @@ public partial class RouteManager : MonoBehaviour
         bribeUsedThisRun = false;
         runFailed = false;
         runStartTime = Time.time;
+        _runFoundUnits = 0;
+        _runFineAmount = 0;
+        _wasCaughtThisRun = false;
+        _runSeverityBand = default; // don’t assume “None” exists yet
 
         GameObject truck = Instantiate(truckPrefab, route[0].transform.position, Quaternion.identity);
 
@@ -107,12 +123,16 @@ public partial class RouteManager : MonoBehaviour
                 wasInspected = wasInspectedThisRun,
                 illegalFound = illegalFoundThisRun,
                 bribeUsed = bribeUsedThisRun,
+                wasCaught = _wasCaughtThisRun,
+                foundUnits = _runFoundUnits,
+                severityBand = _runSeverityBand,
+                fineAmount = _runFineAmount,
 
                 instabilityAtStart = 0,
                 riskAtStart = active != null ? active.riskPercent : 0,
 
                 payout = active != null ? active.payout : 0,
-                penalty = active != null ? active.penalty : 0,
+                penalty = _runFineAmount,
 
                 heatChange = illegalFoundThisRun ? 5 : (wasInspectedThisRun ? 1 : 0),
 
@@ -174,74 +194,103 @@ public partial class RouteManager : MonoBehaviour
         border.transform.localScale = originalScale;
     }
     private IEnumerator HandleBorderInspection(BorderNode border)
+{
+    yield return new WaitForSeconds(0.25f);
+
+    // Stage 1: inspected?
+    bool inspected = forceInspection || Random.value < border.inspectionChance;
+    if (!inspected)
+        yield break;
+
+    wasInspectedThisRun = true;
+
+    Debug.Log($"INSPECTION at {border.townName} ({border.type})");
+
+    // Visual feedback
+    yield return StartCoroutine(FlashBorder(border, border.inspectionDelay));
+
+    if (border.inspectionDelay > 0f)
+        yield return new WaitForSeconds(0.5f);
+
+    // -------------------------------
+    // Stage 2: caught? + severity (v0.7.0)
+    // -------------------------------
+
+    bool carryingIllegalGoods =
+        contractContext != null &&
+        contractContext.HasActive &&
+        contractContext.Active.hasIllegalGoods;
+
+    // If nothing illegal, inspection ends here
+    if (!carryingIllegalGoods)
+        yield break;
+
+    // Roll B: caught?
+    float caughtChance = (contractContext.Active.riskPercent / 100f);
+    bool caught = Random.value < caughtChance;
+
+    if (!caught)
+        yield break;
+
+    _wasCaughtThisRun = true;
+
+    // Convert CargoSize -> units (requires ActiveContractContext.cargoSize)
+    int cargoUnits = 0;
+    if (_cargoConfig != null && contractContext != null && contractContext.HasActive)
     {
-        yield return new WaitForSeconds(0.25f);
-
-        bool inspected = forceInspection || Random.value < border.inspectionChance;
-
-        if (!inspected)
-            yield break;
-
-        wasInspectedThisRun = true;
-
-        Debug.Log($"INSPECTION at {border.townName} ({border.type})");
-
-        // Visual feedback
-        yield return StartCoroutine(FlashBorder(border, border.inspectionDelay));
-
-        if (border.inspectionDelay > 0f)
-            yield return new WaitForSeconds(0.5f);
-        
-        // --- Illegal detection logic ---
-
-        bool carryingIllegalGoods =
-            contractContext != null &&
-            contractContext.HasActive &&
-            contractContext.Active.hasIllegalGoods;
-
-        float illegalDetectionChance = 0.3f; // temporary placeholder
-
-        if (carryingIllegalGoods && Random.value < illegalDetectionChance)
-        {
-            illegalFoundThisRun = true;
-            runFailed = true;
-
-            Debug.Log("Illegal goods discovered! Delivery failed.");
-
-            yield break;
-        }
-
-        if (carryingIllegalGoods && Random.value < illegalDetectionChance)
-        {
-            illegalFoundThisRun = true;
-            runFailed = true;
-
-            Debug.Log("Illegal goods discovered! Delivery failed.");
-
-            yield break;
-        }
-
-        // --- Bribe logic placeholder (future expansion) ---
-        bool attemptBribe = false; // hook into UI later
-
-        if (attemptBribe)
-        {
-            bribeUsedThisRun = true;
-
-            bool bribeSuccess = Random.value < 0.7f; // 70% success chance
-
-            if (!bribeSuccess)
-            {
-                illegalFoundThisRun = true;
-                runFailed = true;
-
-                Debug.Log("Bribe failed! Delivery failed.");
-                yield break;
-            }
-
-            Debug.Log("Bribe succeeded.");
-        }
-
-        Debug.Log("Inspection cleared.");
+        cargoUnits = _cargoConfig.GetUnits(contractContext.Active.cargoSize);
     }
+
+    // Vehicle capacity from ActiveVehicleContext
+    int vehicleCapacity = 0;
+    if (ActiveVehicleContext.Instance != null)
+    {
+        vehicleCapacity = ActiveVehicleContext.Instance.CurrentCapacityUnits;
+    }
+
+    // Calculate severity + found units + fine (static, 3 params)
+    var inspectionResult = InspectionSeverityCalculator.Calculate(
+        cargoUnits,
+        vehicleCapacity,
+        _inspectConfig
+    );
+
+    _runFoundUnits = inspectionResult.foundUnits;
+    _runSeverityBand = inspectionResult.band;
+    _runFineAmount = inspectionResult.fineAmount;
+
+    illegalFoundThisRun = (_runFoundUnits > 0);
+
+    Debug.Log($"CAUGHT: FoundUnits={_runFoundUnits}, Band={_runSeverityBand}, Fine={_runFineAmount}");
+
+    // Outcome rule (v0.7.0)
+    if (_runSeverityBand == InspectionSeverityBand.Major ||
+        _runSeverityBand == InspectionSeverityBand.Extreme)
+    {
+        runFailed = true;
+        Debug.Log("Caught with Major/Extreme severity. Delivery failed.");
+        yield break;
+    }
+
+    // --- Bribe logic placeholder (future expansion) ---
+    bool attemptBribe = false; // hook into UI later
+
+    if (attemptBribe)
+    {
+        bribeUsedThisRun = true;
+
+        bool bribeSuccess = Random.value < 0.7f; // 70% success chance
+
+        if (!bribeSuccess)
+        {
+            illegalFoundThisRun = true;
+            runFailed = true;
+
+            Debug.Log("Bribe failed! Delivery failed.");
+            yield break;
+        }
+
+        Debug.Log("Bribe succeeded.");
+    }
+}
 }

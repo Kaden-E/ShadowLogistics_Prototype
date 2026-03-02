@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using ShadowLogistics.Inspection;
 
 [Serializable]
 public class DeliveryResult
@@ -15,6 +16,12 @@ public class DeliveryResult
     public bool wasInspected;
     public bool illegalFound;
     public bool bribeUsed;
+    
+    // v0.7.0 inspection severity
+    public bool wasCaught;
+    public int foundUnits;
+    public InspectionSeverityBand severityBand;
+    public int fineAmount;
 
     // World state snapshot
     public int instabilityAtStart;

@@ -1,4 +1,5 @@
 using UnityEngine;
+using ShadowLogistics.Cargo;
 
 [CreateAssetMenu(menuName = "Shadow Logistics/Contract Definition")]
 public class ContractDefinition : ScriptableObject
@@ -18,5 +19,8 @@ public class ContractDefinition : ScriptableObject
     
     [Header("Cargo Type")]
     public bool isIllegal = false;
+    
+    [Header("Cargo Size")]
+    public CargoSize cargoSize = CargoSize.Medium;
     
 }
