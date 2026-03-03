@@ -1,161 +1,232 @@
-Shadow Logistics
+# Shadow Logistics
 
-A graph-based logistics strategy prototype built in Unity.
-Plan routes manually, manage border risk, and dispatch deliveries across a dynamic network.
+A **systems-driven logistics strategy prototype** built in Unity.
 
-Current Version
+Plan delivery routes across a network of towns and border crossings while managing escalating enforcement pressure, inspection risks, and economic growth. Every delivery alters the state of the world, creating a dynamic risk-reward simulation where expansion increases exposure.
 
-v0.2 – Routing & Border Inspection (Pre-Release)
+---
 
-Core Concept
+## Current Version
 
-Shadow Logistics is a systems-driven prototype focused on:
+**v0.8.0 — Persistent Regional Heat System**
 
-Player-authored route planning
+Shadow Logistics is currently a **vertical gameplay prototype** focused on systemic simulation and strategic decision making.
 
-Graph-based network traversal
+Latest systems include:
 
-Risk-based border crossings
+* Regional **Heat accumulation**
+* Dynamic **inspection pressure**
+* **Contract tier progression**
+* **Delivery outcome tracking**
+* **Wallet-based economy**
+* Data-driven systems built using **ScriptableObjects**
 
-Route visualization and simulation
+---
 
-The player manually constructs a route segment-by-segment across connected towns and border nodes, then dispatches a truck to simulate delivery.
+## Core Gameplay Loop
 
-Current Features
-Graph-Based Routing
+1. Select contracts from the board
+2. Plan a route across connected towns and border crossings
+3. Dispatch a vehicle to complete the delivery
+4. Border inspections may occur depending on risk and regional pressure
+5. Outcomes affect player money, reputation, and regional Heat
+6. Growing operations increase systemic pressure and enforcement activity
 
-Towns and border crossings are unified as graph nodes
+The player must balance **growth, profit, and exposure** while navigating a constantly evolving network.
 
-Routes must follow valid connections
+---
 
-Illegal paths are impossible (adjacency enforced)
+## Key Systems
 
-Manual Route Planning
+### Route Planning System
 
-Click nodes to build route step-by-step
+Players manually construct routes across a graph network.
 
-Right-click to undo last segment
+* Towns and borders are graph nodes
+* Routes must follow valid connections
+* Player controls each segment of the journey
+* Illegal routes are impossible
 
-ESC to cancel route
+---
 
-Space to dispatch
+### Border Inspection System
 
-Truck Simulation
+Each border crossing can trigger inspections.
 
-Truck travels along selected nodes
+Inspections include:
 
-Speed varies by segment type
+* Detection rolls
+* Delay penalties
+* Confiscation outcomes
+* Severity-based consequences
 
-Border nodes introduce special events
+Inspection probabilities dynamically scale with **regional Heat levels**.
 
-Border Inspection System
+---
 
-Each border crossing has:
+### Persistent Regional Heat System (v0.8.0)
 
-Speed multiplier
+Every region tracks enforcement pressure over time.
 
-Inspection probability
+Heat increases from:
 
-Inspection delay
+* Inspections
+* Caught deliveries
+* Failed smuggling attempts
 
-Inspections trigger:
+Higher Heat results in:
 
-Visual flashing feedback
+* Increased inspection probability
+* Higher severity outcomes
+* Greater long-term strategic pressure
 
-Temporary delay
+Heat decays slowly but never instantly resets, forcing players to manage risk across multiple regions.
 
-Debug toggle available to force inspections
+---
 
-Dynamic Network Visibility
+### Contract Economy
 
-Full route network hidden by default
+Contracts are generated using a **tier-based system**.
 
-Planned route segments highlighted during planning
+Contracts define:
 
-Active route highlighted during delivery
+* Origin and destination
+* Cargo type
+* Risk level
+* Reward payout
 
-Network hides again after completion
+Higher tiers unlock stronger rewards but introduce greater systemic exposure.
 
-Architecture Overview
-Planning Layer
+---
 
-TownManager
+### Delivery Outcome System
 
-Builds player route
+Every delivery produces a structured result:
 
-Validates adjacency
+* Success
+* Inspection delay
+* Confiscation
+* Failure
 
-Controls route preview
+Delivery results update:
 
-Simulation Layer
+* Player wallet
+* Regional Heat
+* Delivery history logs
 
-RouteManager
+This system forms the backbone for the game's evolving world state.
 
-Dispatches trucks
+---
 
-Traverses route nodes
+### Vehicle and Cargo System
 
-Handles border inspection events
+Vehicles define delivery capacity and behavior.
 
-Graph Layer
+Cargo types include:
 
-Town
+* Size classifications
+* Configuration data
+* Compatibility with vehicle types
 
-BorderNode (inherits from Town)
+Vehicle configuration is driven by **ScriptableObject data assets**, allowing flexible balancing and expansion.
 
-Connection
+---
 
-ConnectionManager
+## Architecture Overview
 
-All routing logic is graph-driven.
+The project follows a **layered system architecture**:
 
-Known Limitations
+```
+UI Layer
+↓
+Managers / Controllers
+↓
+Services
+↓
+Domain Models
+↓
+Data (ScriptableObjects)
+```
 
-No economy system yet
+Examples:
 
-No failure/heat mechanics (inspection only delays)
+* `RouteManager` orchestrates route execution
+* `DeliveryOutcomeService` resolves delivery results
+* `WalletService` manages player finances
+* `HeatService` tracks enforcement pressure
+* `ContractManager` generates and manages contracts
 
-No UI panels (debug console used)
+Game logic is separated from configuration data to support scalable system growth.
 
-No save/load
+---
 
-Balance values not tuned
+## Current Systems Implemented
 
-This is a systems prototype, not a full gameplay loop yet.
+* Vertical map foundation
+* Graph-based routing system
+* Manual route planning
+* Border inspection system
+* Contract tier progression
+* Reputation unlocking
+* Data-driven economy
+* Delivery outcome tracking
+* Delivery history logging
+* Persistent regional Heat system
 
-Roadmap
-v0.3 (Planned)
+---
 
-Fuel cost per segment
+## Technology
 
-Profit/loss calculation
+* **Unity 2022 LTS**
+* **C#**
+* **ScriptableObject data architecture**
+* Graph-based world simulation
+* Coroutine-driven delivery simulation
 
-Delivery summary
+---
 
-Risk escalation system
+## Project Status
 
-v0.4+
+Shadow Logistics is an **actively evolving prototype**.
 
-Heat system
+The project is focused on building a **systemic logistics simulation**, where player decisions dynamically influence enforcement pressure, economic opportunity, and long-term operational stability.
 
-Delivery failure states
+---
 
-UI overlays
+## Planned Systems
 
-AI competitors
+Future development aims to expand systemic depth:
 
-Built With
+* Dynamic regional instability
+* AI competitors
+* Supply chain disruptions
+* Expanded economic simulation
+* Strategic map overlays
+* Save/load persistence
 
-Unity 2022 LTS
+---
 
-C#
+## Development Approach
 
-Coroutine-based simulation
+The project follows an **incremental version architecture**, where each version introduces a new systemic layer.
 
-Graph-driven architecture
+Example progression:
 
-Status
+```
+v0.1  Map foundation
+v0.2  Route planning
+v0.3  Economy prototype
+v0.4  Contract tiers
+v0.5  Reputation progression
+v0.6  Inspection severity system
+v0.7  Delivery outcome system
+v0.8  Persistent regional Heat
+```
 
-Pre-release prototype.
-Core routing systems stable.
-Expanding toward full strategic loop.
+Each version expands the simulation rather than replacing previous systems.
+
+---
+
+## License
+
+This project is currently distributed for **portfolio and development purposes**.
