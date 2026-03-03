@@ -4,6 +4,8 @@ using UnityEngine;
 using ShadowLogistics.Cargo;
 using ShadowLogistics.Inspection;
 using ShadowLogistics.Vehicles;
+using ShadowLogistics.Heat;
+
 
 public partial class RouteManager : MonoBehaviour
 {
@@ -13,6 +15,8 @@ public partial class RouteManager : MonoBehaviour
     private bool illegalFoundThisRun;
     private bool bribeUsedThisRun;
     private bool runFailed;
+    private string _lastHeatRegionId;
+    public static string CurrentHeatRegionId { get; private set; }
     
     
     private float runStartTime;
@@ -110,6 +114,9 @@ public partial class RouteManager : MonoBehaviour
                 ? contractContext.Active
                 : null;
 
+            if (string.IsNullOrEmpty(_lastHeatRegionId))
+                _lastHeatRegionId = active != null ? active.origin : route[0].name;
+            
             var result = new DeliveryResult
             {
                 contractId = active != null ? active.contractId : "route_test",
@@ -127,6 +134,8 @@ public partial class RouteManager : MonoBehaviour
                 foundUnits = _runFoundUnits,
                 severityBand = _runSeverityBand,
                 fineAmount = _runFineAmount,
+                regionId = _lastHeatRegionId,
+                
 
                 instabilityAtStart = 0,
                 riskAtStart = active != null ? active.riskPercent : 0,
@@ -194,15 +203,29 @@ public partial class RouteManager : MonoBehaviour
         border.transform.localScale = originalScale;
     }
     private IEnumerator HandleBorderInspection(BorderNode border)
-{
+    { 
+        
+    _lastHeatRegionId = border.townName;
+    CurrentHeatRegionId = _lastHeatRegionId;
+        
     yield return new WaitForSeconds(0.25f);
 
     // Stage 1: inspected?
-    bool inspected = forceInspection || Random.value < border.inspectionChance;
+// Prefer: border.regionId / border.countryId / border.regionName if it exists.
+
+    float inspectionChance = border.inspectionChance;
+    if (HeatService.Instance != null)
+        inspectionChance = HeatService.Instance.ModifyInspectionChance(_lastHeatRegionId, inspectionChance);
+    Debug.Log($"[HEAT] {_lastHeatRegionId} heat={HeatService.Instance.GetHeat(_lastHeatRegionId):0} rollAChance={inspectionChance:0.00}");
+
+    bool inspected = forceInspection || Random.value < inspectionChance;
     if (!inspected)
         yield break;
 
     wasInspectedThisRun = true;
+
+    if (HeatService.Instance != null)
+        HeatService.Instance.OnInspectionTriggered(_lastHeatRegionId);
 
     Debug.Log($"INSPECTION at {border.townName} ({border.type})");
 
@@ -259,15 +282,29 @@ public partial class RouteManager : MonoBehaviour
     _runSeverityBand = inspectionResult.band;
     _runFineAmount = inspectionResult.fineAmount;
 
-    illegalFoundThisRun = (_runFoundUnits > 0);
+// --- HEAT: severity bias ---
+
+        if (HeatService.Instance != null)
+    {
+        _runSeverityBand = HeatService.Instance.BiasSeverity(_lastHeatRegionId, _runSeverityBand);
+    }
+
+// --- HEAT: caught spike ---
+    if (HeatService.Instance != null)
+        
+        illegalFoundThisRun = (_runFoundUnits > 0);
 
     Debug.Log($"CAUGHT: FoundUnits={_runFoundUnits}, Band={_runSeverityBand}, Fine={_runFineAmount}");
 
-    // Outcome rule (v0.7.0)
+    // Outcome rule (v0.8.0)
     if (_runSeverityBand == InspectionSeverityBand.Major ||
         _runSeverityBand == InspectionSeverityBand.Extreme)
     {
         runFailed = true;
+
+        if (HeatService.Instance != null)
+            HeatService.Instance.OnDeliveryFailed(_lastHeatRegionId, _runSeverityBand);
+
         Debug.Log("Caught with Major/Extreme severity. Delivery failed.");
         yield break;
     }

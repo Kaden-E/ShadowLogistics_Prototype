@@ -35,6 +35,9 @@ public class DeliveryResult
     // Timing / meta
     public float timeTakenSeconds;
     public long unixTimeUtc;
+    
+    //Heat
+    public string regionId;
 
     public DeliveryResult()
     {

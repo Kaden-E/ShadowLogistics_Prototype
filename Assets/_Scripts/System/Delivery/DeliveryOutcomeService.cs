@@ -1,11 +1,15 @@
 using System;
 using UnityEngine;
 using ShadowLogistics.Economy;
+using ShadowLogistics.Heat;
 
 public class DeliveryOutcomeService : MonoBehaviour
 {
     [Header("Refs")]
     [SerializeField] private DeliveryHistory history;
+    [SerializeField] private HeatHUD heatHud;
+    
+    
 
     public DeliveryResult LastResult => history != null ? history.GetLast() : null;
     private WalletService _wallet;
@@ -22,6 +26,7 @@ public class DeliveryOutcomeService : MonoBehaviour
     
         public string CompleteDelivery(DeliveryResult result)
         {
+            
             if (history == null)
             {
                 Debug.LogWarning("[DeliveryOutcomeService] No DeliveryHistory assigned. Result won't be stored.");
@@ -53,6 +58,7 @@ public class DeliveryOutcomeService : MonoBehaviour
             string summary = FormatSummary(result);
             Debug.Log(summary);
             return summary;
+            
         }
         
     private string FormatSummary(DeliveryResult r)
