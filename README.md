@@ -4,6 +4,8 @@ A **systems-driven logistics strategy prototype** built in Unity.
 
 Plan delivery routes across a network of towns and border crossings while managing escalating enforcement pressure, inspection risks, and economic growth. Every delivery alters the state of the world, creating a dynamic risk-reward simulation where expansion increases exposure.
 
+See CHANGELOG.md for full development history.
+
 ---
 
 ## Current Version
