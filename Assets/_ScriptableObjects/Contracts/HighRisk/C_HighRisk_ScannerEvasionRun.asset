@@ -18,6 +18,9 @@ MonoBehaviour:
   tier: 2
   basePayout: 450
   baseRisk: 0.7
+  origin: Mirem
+  destination: Tefti
   maxDistanceKm: 30
   timeLimitSeconds: 360
   isIllegal: 1
+  cargoSize: 1

@@ -18,6 +18,9 @@ MonoBehaviour:
   tier: 3
   basePayout: 800
   baseRisk: 0.85
+  origin: Town_Volsen
+  destination: Town_Monsen
   maxDistanceKm: 40
   timeLimitSeconds: 600
   isIllegal: 1
+  cargoSize: 1

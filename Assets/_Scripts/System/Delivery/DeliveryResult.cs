@@ -6,17 +6,21 @@ using ShadowLogistics.Inspection;
 public class DeliveryResult
 {
     public string contractId;
+
     public string origin;
     public string destination;
+    public string finalNode; // v0.8.1
+
     public int tier;
 
     public bool success;
+    public DeliveryFailureReason failureReason; // v0.8.1
 
     // Border/inspection flags
     public bool wasInspected;
     public bool illegalFound;
     public bool bribeUsed;
-    
+
     // v0.7.0 inspection severity
     public bool wasCaught;
     public int foundUnits;
@@ -35,8 +39,8 @@ public class DeliveryResult
     // Timing / meta
     public float timeTakenSeconds;
     public long unixTimeUtc;
-    
-    //Heat
+
+    // Heat
     public string regionId;
 
     public DeliveryResult()

@@ -18,5 +18,9 @@ MonoBehaviour:
   tier: 0
   basePayout: 100
   baseRisk: 0.1
+  origin: Town_Platio
+  destination: Town_Darein
   maxDistanceKm: 5
   timeLimitSeconds: 0
+  isIllegal: 0
+  cargoSize: 1

@@ -18,6 +18,9 @@ MonoBehaviour:
   tier: 1
   basePayout: 250
   baseRisk: 0.35
+  origin: Tefti
+  destination: Platio
   maxDistanceKm: 18
   timeLimitSeconds: 0
   isIllegal: 1
+  cargoSize: 1

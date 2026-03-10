@@ -6,6 +6,42 @@ The project follows a **version-based development structure**, where each versio
 
 ---
 
+## v0.8.1 — Contract Route Enforcement
+
+### Added
+
+- Contract origin validation at route dispatch
+- Destination validation at delivery completion
+- Wrong-destination delivery failure handling
+- Final node tracking in delivery results
+- Delivery failure reason tracking
+- Active contract HUD display
+
+### Systems Introduced
+
+- `ContractHUD`
+- `DeliveryFailureReason`
+
+### Systems Updated
+
+- `ContractDefinition` now includes origin and destination fields
+- `ActiveContractContext` now receives contract route data
+- `RouteManager` now validates route start and destination
+- `DeliveryResult` records final node and failure reason
+
+### Impact
+
+Contracts now function as **structured delivery objectives**.
+
+Routes must begin at the contract origin and terminate at the contract destination to succeed.  
+Incorrect routes are blocked at dispatch or fail on completion.
+
+A minimal in-game HUD now displays the active contract route and relevant delivery information.
+
+This patch restores contract integrity without introducing new gameplay systems.
+
+---
+
 ## v0.8.0 — Persistent Regional Heat System
 
 ### Added

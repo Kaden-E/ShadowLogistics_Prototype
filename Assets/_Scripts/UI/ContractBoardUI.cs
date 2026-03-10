@@ -55,15 +55,17 @@ public class ContractBoardUI : MonoBehaviour
             contractContext.SetActive(new ActiveContractContext
             {
                 contractId = c.contractName,
-                origin = "TBD_ORIGIN",
-                destination = "TBD_DEST",
+                origin = c.origin,
+                destination = c.destination,
+
                 tier = (int)c.tier,
 
                 hasIllegalGoods = c.isIllegal,
                 payout = finalPayout,
                 penalty = 0,
 
-                riskPercent = Mathf.RoundToInt(c.baseRisk * 100f)
+                riskPercent = Mathf.RoundToInt(c.baseRisk * 100f),
+                cargoSize = c.cargoSize
             });
         }
         else

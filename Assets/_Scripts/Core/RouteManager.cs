@@ -55,104 +55,152 @@ public partial class RouteManager : MonoBehaviour
     
     public void DispatchRoute(List<Town> route)
     {
+        var active = (contractContext != null && contractContext.HasActive)
+            ? contractContext.Active
+            : null;
+
+        if (active != null)
+        {
+            if (route == null || route.Count == 0)
+            {
+                Debug.Log("Route must start at contract origin.");
+
+                if (ConnectionManager.Instance != null)
+                    ConnectionManager.Instance.HideAll();
+
+                return;
+            }
+
+            if (route[0].name != active.origin)
+            {
+                Debug.Log("Route must start at contract origin.");
+
+                if (ConnectionManager.Instance != null)
+                    ConnectionManager.Instance.HideAll();
+
+                return;
+            }
+        }
+
         List<Town> routeCopy = new List<Town>(route);
         StartCoroutine(MoveTruckAlongRoute(routeCopy));
+
         if (ConnectionManager.Instance != null)
             ConnectionManager.Instance.ShowRoute(routeCopy);
     }
+private IEnumerator MoveTruckAlongRoute(List<Town> route)
+{
+    if (route == null || route.Count < 2)
+        yield break;
 
-    private IEnumerator MoveTruckAlongRoute(List<Town> route)
+    wasInspectedThisRun = false;
+    illegalFoundThisRun = false;
+    bribeUsedThisRun = false;
+    runFailed = false;
+    runStartTime = Time.time;
+    _runFoundUnits = 0;
+    _runFineAmount = 0;
+    _wasCaughtThisRun = false;
+    _runSeverityBand = default; // don’t assume “None” exists yet
+
+    GameObject truck = Instantiate(truckPrefab, route[0].transform.position, Quaternion.identity);
+
+    float baseSpeed = 2f;
+
+    for (int i = 0; i < route.Count - 1; i++)
     {
-        if (route == null || route.Count < 2) yield break;
-        wasInspectedThisRun = false;
-        illegalFoundThisRun = false;
-        bribeUsedThisRun = false;
-        runFailed = false;
-        runStartTime = Time.time;
-        _runFoundUnits = 0;
-        _runFineAmount = 0;
-        _wasCaughtThisRun = false;
-        _runSeverityBand = default; // don’t assume “None” exists yet
+        Town a = route[i];
+        Town b = route[i + 1];
 
-        GameObject truck = Instantiate(truckPrefab, route[0].transform.position, Quaternion.identity);
+        // Segment speed: if either endpoint is a BorderNode, apply its multiplier
+        float multiplier = 1f;
+        if (a is BorderNode ba) multiplier *= ba.speedMultiplier;
+        if (b is BorderNode bb) multiplier *= bb.speedMultiplier;
 
-        float baseSpeed = 2f;
+        float speed = baseSpeed * multiplier;
 
-        for (int i = 0; i < route.Count - 1; i++)
+        yield return StartCoroutine(MoveTruckTo(truck, b.transform.position, speed));
+
+        if (b is BorderNode border)
         {
-            Town a = route[i];
-            Town b = route[i + 1];
+            yield return StartCoroutine(HandleBorderInspection(border));
 
-            // Segment speed: if either endpoint is a BorderNode, apply its multiplier
-            float multiplier = 1f;
-            if (a is BorderNode ba) multiplier *= ba.speedMultiplier;
-            if (b is BorderNode bb) multiplier *= bb.speedMultiplier;
-
-            float speed = baseSpeed * multiplier;
-
-            yield return StartCoroutine(MoveTruckTo(truck, b.transform.position, speed));
-
-            if (b is BorderNode border)
+            if (runFailed)
             {
-                yield return StartCoroutine(HandleBorderInspection(border));
-
-                if (runFailed)
-                {
-                    Debug.Log("Run terminated due to inspection.");
-                    break;
-                }
+                Debug.Log("Run terminated due to inspection.");
+                break;
             }
         }
-        if (ConnectionManager.Instance != null)
-            ConnectionManager.Instance.HideAll();
-
-        bool success = !runFailed;
-
-        if (deliveryOutcome != null)
-        {
-            var active = (contractContext != null && contractContext.HasActive)
-                ? contractContext.Active
-                : null;
-
-            if (string.IsNullOrEmpty(_lastHeatRegionId))
-                _lastHeatRegionId = active != null ? active.origin : route[0].name;
-            
-            var result = new DeliveryResult
-            {
-                contractId = active != null ? active.contractId : "route_test",
-
-                origin = active != null ? active.origin : route[0].name,
-                destination = active != null ? active.destination : route[route.Count - 1].name,
-
-                tier = active != null ? active.tier : 1,
-
-                success = success,
-                wasInspected = wasInspectedThisRun,
-                illegalFound = illegalFoundThisRun,
-                bribeUsed = bribeUsedThisRun,
-                wasCaught = _wasCaughtThisRun,
-                foundUnits = _runFoundUnits,
-                severityBand = _runSeverityBand,
-                fineAmount = _runFineAmount,
-                regionId = _lastHeatRegionId,
-                
-
-                instabilityAtStart = 0,
-                riskAtStart = active != null ? active.riskPercent : 0,
-
-                payout = active != null ? active.payout : 0,
-                penalty = _runFineAmount,
-
-                heatChange = illegalFoundThisRun ? 5 : (wasInspectedThisRun ? 1 : 0),
-
-                timeTakenSeconds = Time.time - runStartTime
-            };
-
-            deliveryOutcome.CompleteDelivery(result);
-        }
-
-        Destroy(truck);
     }
+
+    if (ConnectionManager.Instance != null)
+        ConnectionManager.Instance.HideAll();
+
+    var active = (contractContext != null && contractContext.HasActive)
+        ? contractContext.Active
+        : null;
+
+    string finalNodeName = route[route.Count - 1].name;
+    bool wrongDestination = false;
+
+    if (active != null)
+    {
+        wrongDestination = finalNodeName != active.destination;
+
+        if (wrongDestination)
+        {
+            runFailed = true;
+            Debug.Log("Delivery failed: wrong destination.");
+        }
+    }
+
+    bool success = !runFailed;
+
+    if (deliveryOutcome != null)
+    {
+        if (string.IsNullOrEmpty(_lastHeatRegionId))
+            _lastHeatRegionId = active != null ? active.origin : route[0].name;
+
+        var result = new DeliveryResult
+        {
+            contractId = active != null ? active.contractId : "route_test",
+
+            origin = active != null ? active.origin : route[0].name,
+            destination = active != null ? active.destination : finalNodeName,
+            finalNode = finalNodeName,
+
+            tier = active != null ? active.tier : 1,
+
+            success = success,
+            failureReason = wrongDestination
+                ? DeliveryFailureReason.WrongDestination
+                : DeliveryFailureReason.None,
+
+            wasInspected = wasInspectedThisRun,
+            illegalFound = illegalFoundThisRun,
+            bribeUsed = bribeUsedThisRun,
+            wasCaught = _wasCaughtThisRun,
+            foundUnits = _runFoundUnits,
+            severityBand = _runSeverityBand,
+            fineAmount = _runFineAmount,
+            regionId = _lastHeatRegionId,
+
+            instabilityAtStart = 0,
+            riskAtStart = active != null ? active.riskPercent : 0,
+
+            payout = success && active != null ? active.payout : 0,
+            penalty = _runFineAmount,
+
+            heatChange = illegalFoundThisRun ? 5 : (wasInspectedThisRun ? 1 : 0),
+
+            timeTakenSeconds = Time.time - runStartTime
+        };
+
+        deliveryOutcome.CompleteDelivery(result);
+    }
+
+    Destroy(truck);
+}
 
     
     private IEnumerator MoveTruckTo(GameObject truck, Vector3 target, float speed)

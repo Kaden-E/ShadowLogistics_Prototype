@@ -2601,6 +2601,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   history: {fileID: 1280600815}
+  heatHud: {fileID: 0}
 --- !u!114 &1280600815
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3186,6 +3187,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   history: {fileID: 0}
+  heatHud: {fileID: 0}
 --- !u!114 &1566830576
 MonoBehaviour:
   m_ObjectHideFlags: 0

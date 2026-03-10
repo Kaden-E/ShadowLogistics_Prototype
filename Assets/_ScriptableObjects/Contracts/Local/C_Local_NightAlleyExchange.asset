@@ -18,6 +18,9 @@ MonoBehaviour:
   tier: 0
   basePayout: 120
   baseRisk: 0.15
+  origin: Town_Monsen
+  destination: Town_Tefti
   maxDistanceKm: 6
   timeLimitSeconds: 0
   isIllegal: 1
+  cargoSize: 1

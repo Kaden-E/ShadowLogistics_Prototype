@@ -18,6 +18,9 @@ MonoBehaviour:
   tier: 1
   basePayout: 220
   baseRisk: 0.3
+  origin: Mirem
+  destination: Platio
   maxDistanceKm: 15
   timeLimitSeconds: 0
   isIllegal: 1
+  cargoSize: 1

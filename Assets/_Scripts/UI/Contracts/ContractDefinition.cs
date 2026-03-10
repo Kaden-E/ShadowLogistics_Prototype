@@ -14,13 +14,15 @@ public class ContractDefinition : ScriptableObject
     [Range(0f, 1f)] public float baseRisk = 0.1f;
 
     [Header("Route")]
+    public string origin;
+    public string destination;
+
     public float maxDistanceKm = 5f;
-    public float timeLimitSeconds = 0f; // 0 = no timer yet (tier 1/2)
-    
+    public float timeLimitSeconds = 0f; // 0 = no timer yet
+
     [Header("Cargo Type")]
     public bool isIllegal = false;
-    
+
     [Header("Cargo Size")]
     public CargoSize cargoSize = CargoSize.Medium;
-    
 }

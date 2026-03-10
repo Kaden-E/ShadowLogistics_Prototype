@@ -18,6 +18,9 @@ MonoBehaviour:
   tier: 0
   basePayout: 130
   baseRisk: 0.2
+  origin: Town_Mirem
+  destination: Town_Volsen
   maxDistanceKm: 7
   timeLimitSeconds: 0
   isIllegal: 1
+  cargoSize: 1

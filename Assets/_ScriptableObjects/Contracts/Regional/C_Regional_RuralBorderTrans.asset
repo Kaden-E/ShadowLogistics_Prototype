@@ -17,6 +17,9 @@ MonoBehaviour:
   tier: 1
   basePayout: 280
   baseRisk: 0.4
+  origin: Volsen
+  destination: Darein
   maxDistanceKm: 20
   timeLimitSeconds: 0
   isIllegal: 1
+  cargoSize: 1

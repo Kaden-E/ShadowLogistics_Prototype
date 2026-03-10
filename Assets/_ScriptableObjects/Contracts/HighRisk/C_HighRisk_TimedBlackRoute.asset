@@ -18,6 +18,9 @@ MonoBehaviour:
   tier: 2
   basePayout: 400
   baseRisk: 0.6
+  origin: Platio
+  destination: Monsen
   maxDistanceKm: 25
   timeLimitSeconds: 300
   isIllegal: 1
+  cargoSize: 1
